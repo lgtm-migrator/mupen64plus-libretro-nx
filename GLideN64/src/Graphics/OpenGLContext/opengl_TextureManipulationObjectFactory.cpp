@@ -273,6 +273,9 @@ namespace opengl {
 
 			const bool iterValid = iter != m_texparams->end();
 			const GLenum target(_parameters.target);
+
+			// Emscripten, only do for non-pow2...
+
 			if (_parameters.magFilter.isValid() && !(iterValid && iter->second.magFilter == GLint(_parameters.magFilter))) {
 				glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GLint(_parameters.magFilter));
 				(*m_texparams)[u32(_parameters.handle)].magFilter = GLint(_parameters.magFilter);
@@ -281,14 +284,12 @@ namespace opengl {
 				glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GLint(_parameters.minFilter));
 				(*m_texparams)[u32(_parameters.handle)].minFilter = GLint(_parameters.minFilter);
 			}
-			if (_parameters.wrapS.isValid() && !(iterValid && iter->second.wrapS == GLint(_parameters.wrapS))) {
-				glTexParameteri(target, GL_TEXTURE_WRAP_S, GLint(_parameters.wrapS));
-				(*m_texparams)[u32(_parameters.handle)].wrapS = GLint(_parameters.wrapS);
-			}
-			if (_parameters.wrapT.isValid() && !(iterValid && iter->second.wrapT == GLint(_parameters.wrapT))) {
-				glTexParameteri(target, GL_TEXTURE_WRAP_T, GLint(_parameters.wrapT));
-				(*m_texparams)[u32(_parameters.handle)].wrapT = GLint(_parameters.wrapT);
-			}
+				glTexParameteri(target, GL_TEXTURE_WRAP_S, GLint(graphics::textureParameters::WRAP_CLAMP_TO_EDGE));
+				(*m_texparams)[u32(_parameters.handle)].wrapS = GLint(graphics::textureParameters::WRAP_CLAMP_TO_EDGE);
+			
+				glTexParameteri(target, GL_TEXTURE_WRAP_T, GLint(graphics::textureParameters::WRAP_CLAMP_TO_EDGE));
+				(*m_texparams)[u32(_parameters.handle)].wrapT = GLint(graphics::textureParameters::WRAP_CLAMP_TO_EDGE);
+			
 			if (m_supportMipmapLevel && _parameters.maxMipmapLevel.isValid() && !(iterValid && iter->second.maxMipmapLevel == GLint(_parameters.maxMipmapLevel))) {
 				glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, GLint(_parameters.maxMipmapLevel));
 				(*m_texparams)[u32(_parameters.handle)].maxMipmapLevel = GLint(_parameters.maxMipmapLevel);
